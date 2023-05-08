@@ -1,4 +1,4 @@
-﻿#include "MyString.h"
+#include "MyString.h"
 #pragma warning (disable:4996)
 
 MyString::MyString(size_t capacity)
@@ -73,6 +73,27 @@ MyString& MyString::operator=(const MyString& other)
 	return *this;
 }
 
+void MyString::moveFrom(MyString&& other)
+{
+	_data = other._data; 
+	other._data = nullptr;
+	_length = other._length;
+}
+
+MyString::MyString(MyString&& other) noexcept
+{
+	moveFrom(std::move(other));
+}
+
+MyString& MyString::operator=(MyString&& other) noexcept
+{
+	if (this != &other)
+	{
+		free();
+		moveFrom(std::move(other));
+	}
+	return (*this);
+}
 
 void MyString::free()
 {
