@@ -1,6 +1,5 @@
 #include "User.h"
-const char* CLIENTS_FILE = "clients.txt";
-const char* DRIVERS_FILE = "drivers.txt";
+
 
 
 User::User(const MyString& username, const MyString& firstName, const MyString& lastName, const MyString& password, const MyString& type)
@@ -64,9 +63,26 @@ const MyString& User::getType() const
 	return _type;
 }
 
-void User::saveInFile(const char* filePath)
+std::istream& operator>>(std::istream& is, User& user)
 {
-	std::ifstream ifs(filePath);
+	is >> user._type;
+	is >> user._userName;
+	is >> user._password;
+	is >> user._firstName;
+	is >> user._lastName;
+	return is;
+}
+
+std::ostream& operator<<(std::ostream& os, const User& user)
+{
+	os << "Type: " << user._type << ", Username: " << user._userName << ", Pass: " << user._password
+		<< ", FirstName: " << user._firstName << ", LastName: " << user._lastName << std::endl;
+	return os;
+}
+
+void User::saveInFile(const MyString& filePath)
+{
+	std::ifstream ifs((const char*)&filePath);
 	if (!ifs.is_open())
 	{
 		std::cout << "Error while openning the file";
@@ -79,9 +95,9 @@ void User::saveInFile(const char* filePath)
 	ifs >> _lastName;
 }
 
-void User::writeInFile(const char* filePath)
+void User::writeInFile(const MyString& filePath)
 {
-	std::ofstream ofs(filePath);
+	std::ofstream ofs((const char*)&filePath);
 	if (!ofs.is_open())
 	{
 		std::cout << "Error while openning the file";
@@ -92,67 +108,4 @@ void User::writeInFile(const char* filePath)
 	ofs << _password << " ";
 	ofs << _firstName << " ";
 	ofs << _lastName << " ";
-}
-
-void registration(User& user)
-{
-	MyString type;
-	MyString username;
-	MyString password;
-	MyString firstname;
-	MyString lastname;
-
-	std::cin >> type >> username >> password >> firstname >> lastname;
-	user.setType(type);
-	user.setUserName(username);
-	user.setFirstName(firstname);
-	user.setLastName(lastname);
-	user.setPass(password);
-	if (type == "client")
-		user.writeInFile(CLIENTS_FILE);
-	else if (type == "driver")
-		user.writeInFile(DRIVERS_FILE);
-}
-
-bool doesUserExists(const MyString& username, const MyString& type)
-{
-	if (type == "client")
-	{
-		std::ifstream ifs(CLIENTS_FILE);
-		if (!ifs.is_open())
-		{
-			std::cout << "Error while openning the file";
-			return false;
-		}
-		MyString curr;
-		while (!ifs.eof())
-		{
-			ifs >> curr;
-			if (curr == username)
-				return true;
-		}
-		return false;
-	}
-	else if (type == "driver")
-	{
-		std::ifstream ifs(DRIVERS_FILE);
-		if (!ifs.is_open())
-		{
-			std::cout << "Error while openning the file";
-			return false;
-		}
-		MyString curr;
-		while (!ifs.eof())
-		{
-			ifs >> curr;
-			if (curr == username)
-				return true;
-		}
-		return false;
-	}
-}
-
-void findUser(User& user)
-{
-	
 }
