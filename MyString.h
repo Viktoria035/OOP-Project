@@ -9,6 +9,7 @@ class MyString
 	void copyFrom(const MyString& data);
 	void free();
 
+	void moveFrom(MyString&& other);
 public:
 
 	MyString();
@@ -19,9 +20,9 @@ public:
 
 	explicit MyString(size_t capacity); //for memory allocation. How much bytes to allocate
 
-	//MyString(MyString&& other) = delete; 
-	//MyString& operator=(MyString&& other) = delete; 
-	///
+	MyString(MyString&& other) noexcept; 
+	MyString& operator=(MyString&& other) noexcept; 
+	
 	MyString(const char* str, const char* begin, const char* end,const size_t MAX);
 	size_t length() const;
 	MyString& operator+=(const MyString& other);
