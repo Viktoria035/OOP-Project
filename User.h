@@ -10,6 +10,7 @@ class User
 	MyString _lastName = "";
 	MyString _firstName = "";
 	MyString _type = "";
+
 public:
 	User() = default;
 	User(const MyString& username, const MyString& firstName, const MyString& lastName, const MyString& password, const MyString& type);
@@ -26,11 +27,12 @@ public:
 	const MyString& getLastName() const;
 	const MyString& getType() const;
 
-	void saveInFile(const char* filePath);
-	void writeInFile(const char* filePath);
+	void saveInFile(const MyString& filePath);
+	void writeInFile(const MyString& filePath);
+
+	friend std::istream& operator>>(std::istream& is, User& user);
+	friend std::ostream& operator<<(std::ostream& os, const User& user);
 };
 void registration(User& user);
 bool doesUserExists(const MyString& username,const MyString& type);
-void findUser(User& user);
-
-
+//void findUser(User& user);
