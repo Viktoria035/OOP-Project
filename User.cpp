@@ -1,14 +1,32 @@
 #include "User.h"
+#include "Utils.h"
 
+User::User(const MyString& type):_type(type) {}
 
-
-User::User(const MyString& username, const MyString& firstName, const MyString& lastName, const MyString& password, const MyString& type)
+User::User(const MyString& type, const MyString& username, const MyString& password,
+	const MyString& firstName, const MyString& lastName)
 {
+	setType(type);
 	setUserName(username);
+	setPass(password);
 	setFirstName(firstName);
 	setLastName(lastName);
+}
+
+User::User(const MyString& username, const MyString& password,
+	const MyString& firstName, const MyString& lastName)
+{
+	setUserName(username);
 	setPass(password);
-	setType(type);
+	setFirstName(firstName);
+	setLastName(lastName);
+}
+
+void User::setType(const MyString& type)
+{
+	if (type != "client" && type != "driver")
+		throw std::invalid_argument("This type does not exists!");
+	_type = type;
 }
 
 void User::setUserName(const MyString& name)
@@ -31,11 +49,16 @@ void User::setLastName(const MyString& last)
 	_lastName = last;
 }
 
-void User::setType(const MyString& type)
+void User::setAmount(double amount)
 {
-	if (type != "client" && type != "driver")
-		throw std::invalid_argument("This type does not exists!");
-	_type = type;
+	if (amount < 0)
+		throw std::invalid_argument("Not valid amount!");
+	this->coins = convertToCoins(amount);
+}
+
+const MyString& User::getType() const
+{
+	return _type;
 }
 
 const MyString& User::getUserName() const
@@ -58,9 +81,21 @@ const MyString& User::getLastName() const
 	return _lastName;
 }
 
-const MyString& User::getType() const
+size_t User::getCoins() const
 {
-	return _type;
+	return coins;
+}
+
+double User::getLeva() const
+{
+	return convertToLeva(coins);
+}
+
+void User::addMoney(size_t amount)
+{
+	if (amount < 0)
+		throw std::invalid_argument("Not valid amount!");
+	this->coins += amount;
 }
 
 std::istream& operator>>(std::istream& is, User& user)
@@ -76,36 +111,37 @@ std::istream& operator>>(std::istream& is, User& user)
 std::ostream& operator<<(std::ostream& os, const User& user)
 {
 	os << "Type: " << user._type << ", Username: " << user._userName << ", Pass: " << user._password
-		<< ", FirstName: " << user._firstName << ", LastName: " << user._lastName << std::endl;
+		<< ", FirstName: " << user._firstName << ", LastName: " << user._lastName;
 	return os;
 }
 
-void User::saveInFile(const MyString& filePath)
-{
-	std::ifstream ifs((const char*)&filePath);
-	if (!ifs.is_open())
-	{
-		std::cout << "Error while openning the file";
-		return;
-	}
-	ifs >> _type;
-	ifs >> _userName;
-	ifs >> _password;
-	ifs >> _firstName;
-	ifs >> _lastName;
-}
-
-void User::writeInFile(const MyString& filePath)
-{
-	std::ofstream ofs((const char*)&filePath);
-	if (!ofs.is_open())
-	{
-		std::cout << "Error while openning the file";
-		return;
-	}
-	ofs << _type << " ";
-	ofs << _userName << " ";
-	ofs << _password << " ";
-	ofs << _firstName << " ";
-	ofs << _lastName << " ";
-}
+//void User::readFromFile(const char* filePath)
+//{
+//	std::ifstream ifs(filePath);
+//	if (!ifs.is_open())
+//	{
+//		std::cout << "Error while openning the file";
+//		return;
+//	}
+//	ifs >> _type;
+//	ifs >> _userName;
+//	ifs >> _password;
+//	ifs >> _firstName;
+//	ifs >> _lastName;
+//}
+//
+//void User::writeInFile(const char* filePath)
+//{
+//	std::ofstream ofs(filePath, std::ios::app);
+//	if (!ofs.is_open())
+//	{
+//		std::cout << "Error while openning the file";
+//		return;
+//	}
+//	ofs << _type << " ";
+//	ofs << _userName << " ";
+//	ofs << _password << " ";
+//	ofs << _firstName << " ";
+//	ofs << _lastName << " ";
+//	ofs << std::endl;
+//}
