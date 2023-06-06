@@ -15,7 +15,11 @@ class System
 	User* currentUser;
 
 public:
-	//System() { load(); }
+	System();
+
+	const MyString& getCurrentUserType() const;
+	const MyString& getDriverName(size_t orderID) const;
+
 	void login(const MyString& username, const MyString& password);
 	void logout();
 	void registration();
@@ -56,6 +60,7 @@ public:
 	Client* findClient(const MyString& username);
 	Driver* findDriver(const MyString& username);
 	size_t findOrderByID(size_t ID) const;
+	size_t findOrderByClientUsername() const;
 
 	void sortDriversByAddress(const Address& adr,size_t size);
 	size_t findClosestDriver(const Address& adr);
