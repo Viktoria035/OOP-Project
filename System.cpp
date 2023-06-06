@@ -16,6 +16,16 @@ static char* messagesDriver[] = { (char*)"Please select your username: ",(char*)
 	(char*)"Please select your first name: ",(char*)"Please select your last name: ",
 		(char*)"Please select your car number: ",(char*)"Please select your phone number: " };
 
+System::System()
+{
+	load();
+}
+
+const MyString& System::getCurrentUserType() const
+{
+	return currentUser->getType();
+}
+
 Client* System::findClient(const MyString& username)
 {
 	for (size_t i = 0; i < arrClients.getSize(); i++)
@@ -403,36 +413,34 @@ void System::pay(double amount, size_t orderID)
 			(arrOrders[idx]).giveDriverMoneyFromClient(convertToCoins(amount));
 		}
 		else
-		{
-			std::cout << "Sorry this order is not finished,yet!" << std::endl;
-		}
+			 throw std::logic_error("Sorry this order is not finished,yet!");
 	}
 	else
 		throw std::invalid_argument("You are not client! You do not have the rights for this command!");
 
 }
 
-void System::rate(const MyString& nameOfDriver, double rating)
+void System::rate(const MyString& nameOfDriver, double rating)//???
 {
 	if (currentUser->getType() == "client")
 	{
 		for (size_t i = 0; i < arrOrders.getSize(); i++)
 		{
-			if ((*(arrOrders[i]).getClient()).getUserName() == currentUser->getUserName() && ((arrOrders[i]).getStatus() == StatusOrder::finished))
+			if (arrOrders[i].getClient()->getUserName() == currentUser->getUserName() && ((arrOrders[i]).getStatus() == StatusOrder::finished))
 			{
-				for (size_t i = 0; i < arrDrivers.getSize(); i++)
+				for (size_t j = 0; j < arrDrivers.getSize(); j++)
 				{
-					if ((arrDrivers[i]).getFirstName() == nameOfDriver)
+					if ((arrDrivers[j]).getFirstName() == nameOfDriver)
 						(arrOrders[i]).setDriverRating(rating);
 					else
 					{
-						std::cout << "Sorry the name of the driver was not found in the finished orders! Please try again!" << std::endl;
+						throw std::invalid_argument("Sorry the name of the driver was not found!" );
 					}
 				}
 			}
 			else
 			{
-				std::cout << "A client with order thar the driver: " << nameOfDriver << " was not found! Please check if it is correct!" << std::endl;
+				throw std::logic_error("Sorry your order is not finished yet, so you can not rate the driver!");
 			}
 		}
 	}
@@ -527,6 +535,8 @@ void System::SaveState()
 
 	for (size_t i = 0; i < arrOrders.getSize(); i++)
 	{
+		if (arrOrders[i].getStatus() == StatusOrder::finished)
+			continue;
 		writeOrderInFile(ofsOr, (arrOrders[i]));
 	}
 
@@ -657,6 +667,15 @@ void System::check_messages() const
 		throw std::invalid_argument("You are not driver! You do not have the rights for this command!");
 }
 
+const MyString& System::getDriverName(size_t orderID) const
+{
+	for (size_t i = 0; i < arrOrders.getSize(); i++)
+	{
+		if (arrOrders[i].getID() == orderID)
+			return arrOrders[i].getDriver()->getFirstName();
+	}
+	throw std::out_of_range("Sorry there is not driver with that name!");
+}
 //void System::acceptOrDecline()
 //{
 //	char command;
@@ -689,6 +708,16 @@ size_t System::findOrderByID(size_t ID) const
 	{
 		if (arrOrders[i].getID() == ID)
 			return i;
+	}
+	throw std::invalid_argument("Not such an ID for order!");
+}
+
+size_t System::findOrderByClientUsername() const
+{
+	for (size_t i = 0; i < arrOrders.getSize(); i++)
+	{
+		if (arrOrders[i].getClient()->getUserName() == currentUser->getUserName())
+			return arrOrders[i].getID();
 	}
 	throw std::invalid_argument("Not such an ID for order!");
 }
