@@ -1,15 +1,15 @@
 #pragma once
 #include "Client.h"
 #include "Driver.h"
-//#include "Shared_ptr.hpp"
-#include "Pointer.hpp"
+
 enum class StatusOrder
 {
-	accepted,
 	inProgress,
+	accepted,
 	finished,
 	canceled,
-	declined
+	declined,
+	paid
 };
 
 class Order
@@ -23,7 +23,7 @@ class Order
 	int orderID;
 	static int count;
 
-	//int amount = 0;//???
+	int amount = 0;//???
 
 	Address origin;
 	Address destination;
@@ -49,7 +49,7 @@ public:
 
 	void setClient(Client* somebody);
 	void setDriver(Driver* somebody);
-	//void setAmount(int amount);//????
+	void setAmount(int amount);//????
 	void setDriverRating(short rate);
 	void setMinutes(int minutes);
 
@@ -66,7 +66,7 @@ public:
 
 	void setDriverStatus(const StatusDriver& curr);
 	void setDriverAddress(const Address& add);
-	void addDriverAmount(double amount);
+	void addDriverAmount(int amount);
 
 	int getPassengersCount() const;
 	int getMinutes() const;
@@ -74,18 +74,23 @@ public:
 	void getStatusOfOrder() const;
 	const StatusOrder& getStatus() const;
 
-	//int getAmount() const;//????
+	int getAmount() const;//????
 
 	const Client* getClient() const;
+	Client* getClient();
 	const Driver* getDriver() const;
+	Driver* getDriver();
 
 	const Address& getOrigin() const;
 	const Address& getDest() const;
 
 	size_t getID() const;
 
-	void giveDriverMoneyFromClient(size_t amount);//MUST TRY!!!!!!
+	void writeOrderInFile(std::ofstream& ofs) const;
+	Order readOrderFromFile(std::ifstream& ifs, Vector<Client>& clients, Vector<Driver>& drivers);
+
+	void withdrawMoneyFromClient(size_t amount);//MUST TRY!!!!!!
 	void clear();//MUST TRY!!!!
-	void checkInfo() const;
-	void check() const;//READYYYY!!!!!!
+	void checkOrderInfo() const;
+	void checkAllInfo() const;//READYYYY!!!!!!
 };
