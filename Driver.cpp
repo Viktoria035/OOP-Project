@@ -42,20 +42,11 @@ void Driver::setAddress(const Address& address)
 	this->address = address;
 }
 
-//void Driver::setAmount(double amount)
-//{
-//	if (amount < 0)
-//		throw std::invalid_argument("Not valid amount!");
-//
-//	currAmount = convertToCoins(amount);
-//}
-
 void Driver::setRating(double rate)
 {
 	if (rate < 1 || rate > 5)
 		throw std::invalid_argument("Not valid rating!");
 	rating = rate;
-	//round(rating);
 }
 
 const MyString& Driver::getCarNumber() const
@@ -72,21 +63,6 @@ const Address& Driver::getAddress() const
 {
 	return address;
 }
-
-//Driver::Driver(const Driver& other):User(other)
-//{
-//	carNumber = other.carNumber;
-//	phoneNumber = other.phoneNumber;
-//	currAmount = other.currAmount;
-//	status = other.status;
-//	address = other.address;
-//	rating = other.rating;
-//}
-
-//size_t Driver::getAmount() const
-//{
-//	return currAmount;
-//}
 
 void Driver::setStatus(int status)
 {
@@ -113,21 +89,54 @@ double Driver::getRating() const
 	return rating;
 }
 
-//void Driver::addMoney(double leva)//
-//{
-//	size_t coins = convertToCoins(leva);
-//	if (coins < 0)
-//		throw std::invalid_argument("Not valid amount!");
-//	currAmount += coins;
-//}
-
 void Driver::giveRating(double rate)
 {
 	if (rate < 1 || rate > 5)
 		throw std::invalid_argument("Not valid rating!");
 	rating += rate;
 	rating /= 2;
-	//round(rating);
+}
+
+void Driver::writeDriverInFile(std::ofstream& ofs) const
+{
+	ofs << getUserName() << ",";
+	ofs << getPass() << ",";
+	ofs << getFirstName() << ",";
+	ofs << getLastName() << ",";
+	ofs << getCarNumber() << ",";
+	ofs << getPhoneNumber() << ",";
+	ofs << getCoins() << ",";
+	ofs << (int)getStatus() << ",";
+	ofs << getRating() << ",";
+	ofs << getAddress().getCoordinates().x << ","
+		<< getAddress().getCoordinates().y << ","
+		<< getAddress().getName() << std::endl;
+}
+
+Driver Driver::readDriverFromFile(std::ifstream& ifs)
+{
+	static char* messages[] = { (char*)"username",(char*)"pass",(char*)"first name",(char*)"last name",
+	(char*)"car number",(char*)"phone number",(char*)"amount",(char*)"status driver" ,(char*)"rating",(char*)"coordinates X",
+		(char*)"coordinates Y",(char*)"address name",(char*)"note" };
+	char buff[sizeof(messages) / sizeof(char*)][1024];
+	char buff2[BUFF_SIZE];
+	ifs.getline(buff2, BUFF_SIZE);
+	std::stringstream ss(buff2);
+	for (int i = 0; i < sizeof(messages) / sizeof(char*); i++)
+	{
+		ss.getline(buff[i], BUFF_SIZE, ',');
+	}
+	setUserName(buff[0]);
+	setPass(buff[1]);
+	setFirstName(buff[2]);
+	setLastName(buff[3]);
+	setCarNumber(buff[4]);
+	setPhoneNumber(buff[5]);
+	setAmount(fromStringToInt(buff[6]));
+	setStatus(fromStringToInt(buff[7]));
+	setRating(stringToDouble(buff[8]));
+	setAddress(buff[11], buff[12], fromStringToInt(buff[9]), fromStringToInt(buff[10]));
+	return(*this);
 }
 
 User* Driver::clone() const
