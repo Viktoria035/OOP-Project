@@ -154,8 +154,7 @@ void System::loadClients()
 	std::ifstream ifs(CLIENTS_FILE);
 	if (!ifs.is_open())
 	{
-		std::cout << "Error while openning the file!";
-		return;
+		throw std::runtime_error("Error while openning client the file!");
 	}
 	size_t linesCount = getLinesCount(ifs) - 1;
 	int idx = 0;
@@ -174,8 +173,7 @@ void System::loadDrivers()
 	std::ifstream ifs(DRIVERS_FILE);
 	if (!ifs.is_open())
 	{
-		std::cout << "Error while openning the file!";
-		return;
+		throw std::runtime_error("Error while openning driver the file!");
 	}
 	size_t linesCount = getLinesCount(ifs) - 1;
 	while (linesCount != 0)
@@ -189,31 +187,40 @@ void System::loadDrivers()
 	ifs.close();
 }
 
-void System::load()
-{
-	loadClients();
-	loadDrivers();
-	loadOrders();
-}
-
 void System::loadOrders()
 {
 	std::ifstream ifs(ORDERS_FILE);
 	if (!ifs.is_open())
 	{
-		std::cout << "Error while openning the file!";
-		return;
+		throw std::runtime_error("Error while openning order the file!");
 	}
 	size_t linesCount = getLinesCount(ifs) - 1;
 	while (linesCount != 0)
 	{
 		Order order;
-		order.readOrderFromFile(ifs,arrClients,arrDrivers);
+		order.readOrderFromFile(ifs, arrClients, arrDrivers);
 		arrOrders.push_back(std::move(order));
 		linesCount--;
 	}
 
 	ifs.close();
+}
+
+void System::load()
+{
+	try {
+		loadClients();
+		loadDrivers();
+		loadOrders();
+	}
+	catch (const std::runtime_error& exc)
+	{
+		std::cout << exc.what() << std::endl;
+	}
+	catch (const std::exception& exc)
+	{
+		std::cout << exc.what() << std::endl;
+	}
 }
 
 void System::checkOrder(size_t orderID) const
