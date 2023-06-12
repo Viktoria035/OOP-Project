@@ -49,11 +49,11 @@ void User::setLastName(const MyString& last)
 	_lastName = last;
 }
 
-void User::setAmount(double amount)
+void User::setAmount(int amount)
 {
 	if (amount < 0)
 		throw std::invalid_argument("Not valid amount!");
-	this->coins = convertToCoins(amount);
+	this->coins = amount;
 }
 
 const MyString& User::getType() const
@@ -81,17 +81,12 @@ const MyString& User::getLastName() const
 	return _lastName;
 }
 
-size_t User::getCoins() const
+int User::getCoins() const
 {
 	return coins;
 }
 
-double User::getLeva() const
-{
-	return convertToLeva(coins);
-}
-
-void User::addMoney(size_t amount)
+void User::addMoney(int amount)
 {
 	if (amount < 0)
 		throw std::invalid_argument("Not valid amount!");
@@ -115,33 +110,20 @@ std::ostream& operator<<(std::ostream& os, const User& user)
 	return os;
 }
 
-//void User::readFromFile(const char* filePath)
-//{
-//	std::ifstream ifs(filePath);
-//	if (!ifs.is_open())
-//	{
-//		std::cout << "Error while openning the file";
-//		return;
-//	}
-//	ifs >> _type;
-//	ifs >> _userName;
-//	ifs >> _password;
-//	ifs >> _firstName;
-//	ifs >> _lastName;
-//}
-//
-//void User::writeInFile(const char* filePath)
-//{
-//	std::ofstream ofs(filePath, std::ios::app);
-//	if (!ofs.is_open())
-//	{
-//		std::cout << "Error while openning the file";
-//		return;
-//	}
-//	ofs << _type << " ";
-//	ofs << _userName << " ";
-//	ofs << _password << " ";
-//	ofs << _firstName << " ";
-//	ofs << _lastName << " ";
-//	ofs << std::endl;
-//}
+void User::addNotification(const MyString& str) 
+{
+	notifications.push_back(str);
+}
+
+void User::printAllNotifications() const
+{
+	if (notifications.getSize() == 0)
+		std::cout << "<Empty>" << std::endl;
+	else
+	{
+		for (size_t i = 0; i < notifications.getSize(); i++)
+		{
+			std::cout << notifications[i] << std::endl;
+		}
+	}
+}
