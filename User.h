@@ -3,6 +3,7 @@
 #include "MyString.h"
 #include <iostream>
 #include "Address.h"
+#include "Vector.hpp"
 class User
 {
 	MyString _type = "Unknown";
@@ -11,7 +12,9 @@ class User
 	MyString _firstName = "Unknown";
 	MyString _lastName = "Unknown";
 
-	size_t coins = 0;
+	int coins = 0;
+
+	Vector<MyString> notifications;
 public:
 	User() = default;
 	User(const MyString& type);
@@ -25,7 +28,7 @@ public:
 	void setPass(const MyString& pass);
 	void setFirstName(const MyString& first);
 	void setLastName(const MyString& last);
-	void setAmount(double amount);
+	void setAmount(int amount);
 
 	const MyString& getType() const;
 	const MyString& getUserName() const;
@@ -33,10 +36,11 @@ public:
 	const MyString& getFirstName() const;
 	const MyString& getLastName() const;
 
-	size_t getCoins() const;
-	double getLeva() const;
+	int getCoins() const;
 
-	void addMoney(size_t amount);
+	void addMoney(int amount);
+	void addNotification(const MyString& str);
+	void printAllNotifications() const;
 
 	friend std::istream& operator>>(std::istream& is, User& user);
 	friend std::ostream& operator<<(std::ostream& os, const User& user);
