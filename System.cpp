@@ -5,16 +5,12 @@
 #include "User.h"
 #include "Utils.h"
 #include "Order.h"
+
 const char* CLIENTS_FILE = "clients.txt";
 const char* DRIVERS_FILE = "drivers.txt";
 const char* ORDERS_FILE = "orders.txt";
 
-static char* messagesClient[] = { (char*)"Please select your username: ",(char*)"Please select your password: ",
-	(char*)"Please select your first name: ",(char*)"Please select your last name: " };
-
-static char* messagesDriver[] = { (char*)"Please select your username: ",(char*)"Please select your password: ",
-	(char*)"Please select your first name: ",(char*)"Please select your last name: ",
-		(char*)"Please select your car number: ",(char*)"Please select your phone number: " };
+#pragma warning (disable:4996)
 
 System::System()
 {
@@ -24,26 +20,6 @@ System::System()
 const MyString& System::getCurrentUserType() const
 {
 	return currentUser->getType();
-}
-
-Client* System::findClient(const MyString& username)
-{
-	for (size_t i = 0; i < arrClients.getSize(); i++)
-	{
-		if ((arrClients[i]).getUserName() == username)
-			return &arrClients[i];
-	}
-	throw std::invalid_argument("Not existing client with that username!");
-}
-
-Driver* System::findDriver(const MyString& username)
-{
-	for (size_t i = 0; i < arrDrivers.getSize(); i++)
-	{
-		if ((arrDrivers[i]).getUserName() == username)
-			return &arrDrivers[i];
-	}
-	throw std::invalid_argument("Not existing driver with that username!");
 }
 
 void System::login(const MyString& username, const MyString& password)
@@ -84,50 +60,11 @@ void System::logout()
 	currentUser = nullptr;
 }
 
-void System::writeClientInFile(std::ofstream& ofs, const Client& newClient) const
-{
-	ofs << newClient.getUserName() << ",";
-	ofs << newClient.getPass() << ",";
-	ofs << newClient.getFirstName() << ",";
-	ofs << newClient.getLastName() << ",";
-	ofs << newClient.getLeva() << std::endl;
-}
-
-void System::writeDriverInFile(std::ofstream& ofs, const Driver& newDriver) const
-{
-	ofs << newDriver.getUserName() << ",";
-	ofs << newDriver.getPass() << ",";
-	ofs << newDriver.getFirstName() << ",";
-	ofs << newDriver.getLastName() << ",";
-	ofs << newDriver.getCarNumber() << ",";
-	ofs << newDriver.getPhoneNumber() << ",";
-	ofs << newDriver.getLeva() << ",";
-	ofs << (int)newDriver.getStatus() << ",";
-	ofs << newDriver.getRating() << ",";
-	ofs << newDriver.getAddress().getCoordinates().x << ","
-		<< newDriver.getAddress().getCoordinates().y << ","
-		<< newDriver.getAddress().getName() << std::endl;
-}
-
-void System::writeOrderInFile(std::ofstream& ofs, const Order& newOrder) const
-{
-	ofs << newOrder.getOrigin().getName() << ",";
-	ofs << newOrder.getOrigin().getCoordinates().x << ",";
-	ofs << newOrder.getOrigin().getCoordinates().y << ",";
-	ofs << newOrder.getOrigin().getNote() << ",";
-	ofs << newOrder.getDest().getName() << ",";
-	ofs << newOrder.getDest().getCoordinates().x << ",";
-	ofs << newOrder.getDest().getCoordinates().y << ",";
-	ofs << newOrder.getDest().getNote() << ",";
-	ofs << newOrder.getPassengersCount() << ",";
-	ofs << (*newOrder.getClient()).getUserName() << ",";
-	ofs << (*newOrder.getDriver()).getUserName() << ",";
-	ofs << newOrder.getMinutes() << ",";
-	ofs << (int)newOrder.getStatus() << std::endl;
-}
-
 void System::createNewClient(Client& newClient)
 {
+	static char* messagesClient[] = { (char*)"Please select your username: ",(char*)"Please select your password: ",
+	(char*)"Please select your first name: ",(char*)"Please select your last name: " };
+
 	char buff[sizeof(messagesClient) / sizeof(char*)][1024];
 	for (size_t i = 0; i < sizeof(messagesClient) / sizeof(char*); i++)
 	{
@@ -138,7 +75,7 @@ void System::createNewClient(Client& newClient)
 	}
 
 	int i = 0;
-	while (i!= arrClients.getSize())
+	while (i != arrClients.getSize())
 	{
 		if (strcmp(buff[0], (arrClients[i]).getUserName().c_str()) == 0)
 		{
@@ -158,6 +95,10 @@ void System::createNewClient(Client& newClient)
 
 void System::createNewDriver(Driver& newDriver)
 {
+	static char* messagesDriver[] = { (char*)"Please select your username: ",(char*)"Please select your password: ",
+	(char*)"Please select your first name: ",(char*)"Please select your last name: ",
+		(char*)"Please select your car number: ",(char*)"Please select your phone number: " };
+
 	char buff[sizeof(messagesDriver) / sizeof(char*)][1024];
 	for (size_t i = 0; i < sizeof(messagesDriver) / sizeof(char*); i++)
 	{
@@ -169,7 +110,10 @@ void System::createNewDriver(Driver& newDriver)
 	for (size_t i = 0; i < arrDrivers.getSize(); i++)
 	{
 		while (strcmp(buff[0], arrDrivers[i].getUserName().c_str()) == 0)
+		{
+			std::cout << "Sorry there is already driver with this username. Try again: ";
 			std::cin >> buff[0];
+		}
 	}
 
 	newDriver.setUserName(buff[0]);
@@ -194,7 +138,6 @@ void System::registration()
 	{
 		Client newClient;
 		createNewClient(newClient);
-		//writeClientInFile(newClient);
 		arrClients.push_back(std::move(newClient));
 
 	}
@@ -202,7 +145,6 @@ void System::registration()
 	{
 		Driver newDriver;
 		createNewDriver(newDriver);
-		//writeDriverInFile(newDriver);
 		arrDrivers.push_back(std::move(newDriver));
 	}
 }
@@ -215,37 +157,15 @@ void System::loadClients()
 		std::cout << "Error while openning the file!";
 		return;
 	}
-
 	size_t linesCount = getLinesCount(ifs) - 1;
-	static char* messages[] = { (char*)"username: ",(char*)"password: ",
-	(char*)"first name: ",(char*)"last name: ",(char*)"coins" };
-	char buff[sizeof(messages) / sizeof(char*)][1024];
-	char buff2[1024];
+	int idx = 0;
 	while (linesCount != 0)
 	{
-		ifs.getline(buff2, 1024);
-		std::stringstream ss(buff2);
-		for (int i = 0; i < sizeof(messages) / sizeof(char*); i++)
-		{
-			ss.getline(buff[i], 1024, ',');
-			/*if (ss.eof())
-			{
-				throw std::runtime_error("Not enough data!");
-			}*/
-		}
 		Client client;
-		client.setUserName(buff[0]);
-		client.setPass(buff[1]);
-		client.setFirstName(buff[2]);
-		client.setLastName(buff[3]);
-		client.setAmount(stringToDouble(buff[4]));
+		client.readClientFromFile(ifs);
 		arrClients.push_back(std::move(client));
-		/*if (!ss.eof()) {
-			throw std::runtime_error("Invalid file!");
-		}*/
 		linesCount--;
 	}
-
 	ifs.close();
 }
 
@@ -258,38 +178,11 @@ void System::loadDrivers()
 		return;
 	}
 	size_t linesCount = getLinesCount(ifs) - 1;
-	static char* messeges[] = { (char*)"username",(char*)"pass",(char*)"first name",(char*)"last name",
-	(char*)"car number",(char*)"phone number",(char*)"amount",(char*)"status driver" ,(char*)"rating",(char*)"coordinates X",
-		(char*)"coordinates Y",(char*)"address name",(char*)"note" };
-	char buff[sizeof(messeges) / sizeof(char*)][1024];
-	char buff2[1024];
 	while (linesCount != 0)
 	{
-		ifs.getline(buff2, 1024);
-		std::stringstream ss(buff2);
-		for (int i = 0; i < sizeof(messeges) / sizeof(char*); i++)
-		{
-			ss.getline(buff[i], 1024, ',');
-			/*if (ss.eof())//loookkkkkk
-			{
-				throw std::runtime_error("Not enough data!");
-			}*/
-		}
 		Driver driver;
-		driver.setUserName(buff[0]);
-		driver.setPass(buff[1]);
-		driver.setFirstName(buff[2]);
-		driver.setLastName(buff[3]);
-		driver.setCarNumber(buff[4]);
-		driver.setPhoneNumber(buff[5]);
-		driver.setAmount(fromStringToInt(buff[6]));
-		driver.setStatus(fromStringToInt(buff[7]));
-		driver.setRating(stringToDouble(buff[8]));
-		driver.setAddress(buff[11], buff[12], fromStringToInt(buff[9]), fromStringToInt(buff[10]));
+		driver.readDriverFromFile(ifs);
 		arrDrivers.push_back(std::move(driver));
-		/*if (!ss.eof()) {
-			throw std::runtime_error("Invalid file!");
-		}*/
 		linesCount--;
 	}
 
@@ -312,33 +205,11 @@ void System::loadOrders()
 		return;
 	}
 	size_t linesCount = getLinesCount(ifs) - 1;
-	static char* messegesOrders[] = { (char*)"address",(char*)"coordinates X",(char*)"coordinates Y",(char*)"noteOrigin",(char*)"destination",
-	(char*)"coordinates X",(char*)"coordinates Y",(char*)"noteDest",(char*)"passengers count",(char*)"client username",(char*)"driver username",
-	(char*)"minutes",(char*)"status" };
-
-	char buff[sizeof(messegesOrders) / sizeof(char*)][1024];
-	char buff2[1024];
 	while (linesCount != 0)
 	{
-		ifs.getline(buff2, 1024);
-		std::stringstream ss(buff2);
-		for (int i = 0; i < sizeof(messegesOrders) / sizeof(char*); i++)
-		{
-			ss.getline(buff[i], 1024, ',');
-		}
 		Order order;
-		order.setAddress(buff[0], buff[3], fromStringToInt(buff[1]), fromStringToInt(buff[2]));
-		order.setDestination(buff[4], buff[7], fromStringToInt(buff[5]), fromStringToInt(buff[6]));
-		order.setPassengersCount(fromStringToInt(buff[8]));
-		order.setClient(findClient(buff[9]));
-		order.setDriver(findDriver(buff[10]));
-		//order.setAmount(fromStringToInt(buff[11]));
-		order.setMinutes(fromStringToInt(buff[11]));
-		order.setStatusByInt(fromStringToInt(buff[12]));
+		order.readOrderFromFile(ifs,arrClients,arrDrivers);
 		arrOrders.push_back(std::move(order));
-		/*if (!ss.eof()) {
-			throw std::runtime_error("Invalid file!");
-		}*/
 		linesCount--;
 	}
 
@@ -350,39 +221,31 @@ void System::checkOrder(size_t orderID) const
 	if (currentUser->getType() == "client")
 	{
 		size_t idx = findOrderByID(orderID);
-		(arrOrders[idx]).check();
+		if (arrOrders[idx].getClient()->getUserName() != currentUser->getUserName())
+			throw std::invalid_argument("Sorry you do not have rights about this order!");
+		(arrOrders[idx]).checkAllInfo();
 	}
 	else
 		throw std::invalid_argument("You are not client! You do not have the rights for this command!");
 }
 
-void System::print() const
+void System::checkCurrentClientOrders() const
 {
-	for (size_t i = 0; i < arrClients.getSize(); i++)
+	if (currentUser->getType() == "client")
 	{
-		std::cout << (arrClients[i]).getUserName() << " " << (arrClients[i]).getPass()
-			<< " " << (arrClients[i]).getFirstName() << " " << (arrClients[i]).getLastName() << " " << (arrClients[i]).getLeva() << std::endl;
-	}
-	std::cout << std::endl;
-	for (size_t i = 0; i < arrDrivers.getSize(); i++)
-	{
-		std::cout << (arrDrivers[i]).getUserName() << " " << (arrDrivers[i]).getPass()
-			<< " " << (arrDrivers[i]).getFirstName() << " " << (arrDrivers[i]).getLastName() << " " <<
-			(arrDrivers[i]).getCarNumber() << " " << (arrDrivers[i]).getPhoneNumber() << " " <<
-			(arrDrivers[i]).getLeva() << " " << (int)(arrDrivers[i]).getStatus() << " " << (arrDrivers[i]).getRating() << " " <<
-			(arrDrivers[i]).getAddress().getName() << " " << (arrDrivers[i]).getAddress().getCoordinates().x << " "
-			<< (arrDrivers[i]).getAddress().getCoordinates().y << " " << std::endl;
-	}
-	std::cout << std::endl;
-	for (size_t i = 0; i < arrOrders.getSize(); i++)
-	{
-		(arrOrders[i]).check();
+		bool isEmpty = true;
+		std::cout << "OrderIDs: ";
+		for (size_t i = 0; i < arrOrders.getSize(); i++)
+		{
+			if (arrOrders[i].getClient()->getUserName() == currentUser->getUserName())
+			{
+				std::cout << arrOrders[i].getID() << " ";
+				isEmpty = false;
+			}
+		}
+		if (isEmpty)
+			std::cout << " <empty>";
 		std::cout << std::endl;
-		std::cout << (arrOrders[i]).getID() << " " << (arrOrders[i]).getOrigin().getName() << " " << (arrOrders[i]).getOrigin().getNote() << " "
-			<< (arrOrders[i]).getOrigin().getCoordinates().x << " " << (arrOrders[i]).getOrigin().getCoordinates().y << " " <<
-			(arrOrders[i]).getDest().getName() << " " << (arrOrders[i]).getDest().getNote() << " "
-			<< (arrOrders[i]).getDest().getCoordinates().x << " " << (arrOrders[i]).getDest().getCoordinates().y << " " << std::endl;
-
 	}
 }
 
@@ -391,11 +254,12 @@ void System::cancel_order(size_t orderID)
 	if (currentUser->getType() == "client")
 	{
 		size_t idx = findOrderByID(orderID);
+		if (arrOrders[idx].getClient()->getUserName() != currentUser->getUserName())
+			throw std::invalid_argument("Sorry you do not have rights about this order!");
+
 		if ((arrOrders[idx]).getStatus() == StatusOrder::accepted)
-		{
-			std::cout << "Order with number: " << orderID << "has just been canceled!" << std::endl;
-			std::cout << "Driver: " << (*(arrOrders[idx]).getDriver()).getUserName() << "your status is Free." << std::endl;
-		}
+			arrOrders[idx].getDriver()->addNotification("Order with ID: " + convertToStr(orderID) +
+				" has been canceled! Your status is <Free>.");
 		(arrOrders[idx]).clear();
 	}
 	else
@@ -406,14 +270,20 @@ void System::pay(double amount, size_t orderID)
 {
 	if (currentUser->getType() == "client")
 	{
+		if (amount <= 0)
+			throw std::invalid_argument("The amount should be more than zero!");
 		size_t idx = findOrderByID(orderID);
+		if (arrOrders[idx].getClient()->getUserName() != currentUser->getUserName())
+			throw std::invalid_argument("Sorry you do not have rights about this order!");
 		if ((arrOrders[idx]).getStatus() == StatusOrder::finished)
 		{
-			std::cout << "Your order has been finished! Driver: " << (*(arrOrders[idx]).getDriver()).getUserName() << " has been paid: " << amount << " leva." << std::endl;
-			(arrOrders[idx]).giveDriverMoneyFromClient(convertToCoins(amount));
+			(arrOrders[idx]).withdrawMoneyFromClient(convertToCoins(amount));
+			arrOrders[idx].setAmount(convertToCoins(amount));
+
+			arrOrders[idx].getDriver()->addNotification("Client to order with ID: " + convertToStr(orderID) + " has just paid you " + convertToStr(amount) + " leva.");
 		}
 		else
-			 throw std::logic_error("Sorry this order is not finished,yet!");
+			throw std::logic_error("Sorry this order is not finished,yet!");
 	}
 	else
 		throw std::invalid_argument("You are not client! You do not have the rights for this command!");
@@ -434,7 +304,7 @@ void System::rate(const MyString& nameOfDriver, double rating)//???
 						(arrOrders[i]).setDriverRating(rating);
 					else
 					{
-						throw std::invalid_argument("Sorry the name of the driver was not found!" );
+						throw std::invalid_argument("Sorry the name of the driver was not found!");
 					}
 				}
 			}
@@ -452,8 +322,8 @@ void System::add_money(double amount)
 {
 	if (currentUser->getType() == "client")
 	{
-		size_t coins = convertToCoins(amount);
-		currentUser->addMoney(amount);
+		//int coins = convertToCoins(amount);
+		currentUser->addMoney(convertToCoins(amount));
 	}
 	else
 		throw std::invalid_argument("You are not client! You do not have the rights for this command!");
@@ -464,11 +334,15 @@ void System::accept_order(size_t orderID, size_t minutes)
 	if ((*currentUser).getType() == "driver")
 	{
 		size_t idx = findOrderByID(orderID);
-		(arrOrders[idx]).setDriver(findDriver((*currentUser).getUserName()));
+		if (arrOrders[idx].getDriver()->getUserName() != currentUser->getUserName())
+			throw std::invalid_argument("Sorry you do not have rights about this order!");
+		(arrOrders[idx]).setDriver(findDriver(arrDrivers,(*currentUser).getUserName()));
 		(arrOrders[idx]).setMinutes(minutes);
 		(arrOrders[idx]).setOrderStatus(StatusOrder::accepted);
 		(arrOrders[idx]).setDriverStatus(StatusDriver::Driving);
 		std::cout << "The order is accept!" << std::endl;
+
+		(arrOrders[idx]).getClient()->addNotification("Order with ID: " + convertToStr(orderID) + ", has just been accepted!");
 	}
 	else
 		throw std::invalid_argument("You are not driver! You do not have the rights for this command!");
@@ -479,68 +353,33 @@ void System::finish_order(size_t orderID)
 	if (currentUser->getType() == "driver")
 	{
 		size_t idx = findOrderByID(orderID);
+		if (arrOrders[idx].getDriver()->getUserName() != currentUser->getUserName())
+			throw std::invalid_argument("Sorry you do not have rights about this order!");
 		(arrOrders[idx]).setDriverAddress((arrOrders[idx]).getDest());
 		(arrOrders[idx]).setOrderStatus(StatusOrder::finished);
+
+		arrOrders[idx].getClient()->addNotification("Order with ID: " + convertToStr(orderID) +
+			", has been finished. Please pay the driver as soon as possible!");
 	}
 	else
 		throw std::invalid_argument("You are not driver! You do not have the rights for this command!");
 }
 
-void System::accept_payment(size_t orderID, double amount)
+void System::accept_payment(size_t orderID)//?????
 {
 	if (currentUser->getType() == "driver")
 	{
 		size_t idx = findOrderByID(orderID);
-		(arrOrders[idx]).addDriverAmount(amount);
+		if (arrOrders[idx].getAmount() == 0)
+			throw std::logic_error("The client has not paid yet!");
+		(arrOrders[idx]).addDriverAmount(arrOrders[idx].getAmount());
+		arrOrders[idx].setOrderStatus(StatusOrder::paid);
+
+		arrOrders[idx].getClient()->addNotification("Driver to order with ID: " + convertToStr(orderID) +
+			" has accepted the payment. Please rate the driver!");
 	}
 	else
 		throw std::invalid_argument("You are not driver! You do not have the rights for this command!");
-}
-
-void System::SaveState()
-{
-	std::ofstream ofsCl(CLIENTS_FILE, std::ios::out);
-	if (!ofsCl.is_open())
-	{
-		std::cout << "Error while openning the file!";
-		return;
-	}
-
-	for (size_t i = 0; i < arrClients.getSize(); i++)
-	{
-		writeClientInFile(ofsCl, (arrClients[i]));
-	}
-
-	ofsCl.close();
-
-	std::ofstream ofsDr(DRIVERS_FILE, std::ios::out);
-	if (!ofsDr.is_open())
-	{
-		std::cout << "Error while openning the file!";
-		return;
-	}
-	for (size_t i = 0; i < arrDrivers.getSize(); i++)
-	{
-		writeDriverInFile(ofsDr, (arrDrivers[i]));
-	}
-
-	ofsDr.close();
-
-	std::ofstream ofsOr(ORDERS_FILE, std::ios::out);
-	if (!ofsOr.is_open())
-	{
-		std::cout << "Error while openning the file!" << std::endl;
-		return;
-	}
-
-	for (size_t i = 0; i < arrOrders.getSize(); i++)
-	{
-		if (arrOrders[i].getStatus() == StatusOrder::finished)
-			continue;
-		writeOrderInFile(ofsOr, (arrOrders[i]));
-	}
-
-	ofsOr.close();
 }
 
 void System::sortDriversByAddress(const Address& adr, size_t size)
@@ -574,9 +413,7 @@ size_t System::findClosestDriver(const Address& adr)
 	size_t i = 0;
 	for (; i < arrDrivers.getSize(); i++)
 	{
-		if ((arrDrivers[i]).getStatus() != StatusDriver::Free)
-			i++;
-		else
+		if ((arrDrivers[i]).getStatus() == StatusDriver::Free)
 			return i;
 	}
 	if (i > size)
@@ -588,20 +425,12 @@ void System::order(const Address& origin, const Address& dest, size_t passengers
 	if (currentUser->getType() == "client")
 	{
 		size_t index = 0;
-		try
-		{
-			index = findClosestDriver(origin);
-		}
-		catch (std::out_of_range& exc)
-		{
-			std::cout << exc.what() << std::endl;
-			return;
-		}
+		index = findClosestDriver(origin);
 		Order newOrder;
 		newOrder.setDriver(&arrDrivers[index]);
 		newOrder.setAddress(origin);
 		newOrder.setDestination(dest);
-		newOrder.setClient(findClient(currentUser->getUserName()));
+		newOrder.setClient(findClient(arrClients,currentUser->getUserName()));
 		newOrder.setPassengersCount(passengersCount);
 		arrOrders.push_back(std::move(newOrder));
 	}
@@ -613,8 +442,7 @@ void System::change_address(const Address& address)
 {
 	if (currentUser->getType() == "driver")
 	{
-		Pointer<Driver> currDriver = findDriver(currentUser->getUserName());
-		(*currDriver).setAddress(address);
+		findDriver(arrDrivers,currentUser->getUserName())->setAddress(address);
 	}
 	else
 		throw std::invalid_argument("You are not driver! You do not have the rights for this command!");
@@ -625,22 +453,23 @@ void System::decline_order(size_t orderID)//????
 	if ((*currentUser).getType() == "driver")
 	{
 		size_t idx = findOrderByID(orderID);
+		if (arrOrders[idx].getDriver()->getUserName() != currentUser->getUserName())
+			throw std::invalid_argument("Sorry you do not have rights about this order!");
 		sortDriversByAddress(arrOrders[idx].getOrigin(), arrDrivers.getSize());
 		size_t index = 0;
-		try
+		index = findClosestDriver(arrOrders[idx].getOrigin());
+		if (arrDrivers[index].getUserName() == arrOrders[idx].getDriver()->getUserName())
+			index++;
+		if (index >= arrDrivers.getSize())
 		{
-			index = findClosestDriver(arrOrders[idx].getOrigin());
-		}
-		catch (std::out_of_range& exc)
-		{
-			std::cout << exc.what() << std::endl;
+			arrOrders[idx].getClient()->addNotification("Sorry your order with ID: " + convertToStr(orderID) +
+				"can not be taken, there is no free drivers right now! Please wait!");
+			arrOrders[idx].setOrderStatus(StatusOrder::declined);
+			index = 0;
+			arrOrders[idx].setDriver(&arrDrivers[index]);
 			return;
 		}
-		if (arrDrivers[idx].getUserName() == arrOrders[idx].getDriver()->getUserName())
-			idx++;
-		if (idx >= arrDrivers.getSize())
-			throw std::out_of_range("There is not free driver!");
-		arrOrders[idx].setDriver(&arrDrivers[idx]);
+		arrOrders[idx].setDriver(&arrDrivers[index]);
 	}
 	else
 		throw std::invalid_argument("You are not driver! You do not have the rights for this command!");
@@ -650,18 +479,18 @@ void System::check_messages() const
 {
 	if (currentUser->getType() == "driver")
 	{
-		//size_t* arrID = new size_t[arrOrders.getSize()]{ 0 };
+		bool isEmpty = true;
 		for (size_t i = 0; i < arrOrders.getSize(); i++)
 		{
 			if (currentUser->getUserName() == arrOrders[i].getDriver()->getUserName())
 			{
-				(arrOrders[i]).checkInfo();
-				//arrID[i] = arrOrders[i].getID();
+				(arrOrders[i]).checkOrderInfo();
+				isEmpty = false;
 			}
 			std::cout << std::endl;
 		}
-
-		//delete[] arrID;
+		if (isEmpty)
+			std::cout << "Sorry there is no orders offered to you!" << std::endl;
 	}
 	else
 		throw std::invalid_argument("You are not driver! You do not have the rights for this command!");
@@ -676,31 +505,6 @@ const MyString& System::getDriverName(size_t orderID) const
 	}
 	throw std::out_of_range("Sorry there is not driver with that name!");
 }
-//void System::acceptOrDecline()
-//{
-//	char command;
-//	char id;
-//	unsigned  minutes = 0;
-//	std::cout << "Please select order to accept('A') or decline('D'): ";
-//	std::cout << "OrderID: ";
-//	std::cin >> id;
-//	size_t convertToNum = id - '0';
-//	for (size_t i = 0; i < arrOrders.getSize(); i++)
-//	{
-//		if (convertToNum != arrID[i])
-//			throw std::invalid_argument("Not valid ID order!");
-//	}
-//	std::cout << "Command: ";
-//	std::cin >> command;
-//	switch (command)
-//	{
-//	case 'A':std::cout << "Please select how minutes will it takes to you get to the address: ";
-//		std::cin >> minutes;
-//		accept_order(id - '0', minutes); break;
-//	case 'D': decline_order(id - '0'); break;
-//	default:"There is no such a command!"; break;
-//	}
-//}
 
 size_t System::findOrderByID(size_t ID) const
 {
@@ -709,35 +513,75 @@ size_t System::findOrderByID(size_t ID) const
 		if (arrOrders[i].getID() == ID)
 			return i;
 	}
-	throw std::invalid_argument("Not such an ID for order!");
+	throw std::invalid_argument("Not such an order ID!");
 }
 
-size_t System::findOrderByClientUsername() const
+void System::printNotifications() const
 {
+	currentUser->printAllNotifications();
+}
+
+void System::writeClientsInFile() const
+{
+	std::ofstream ofsCl(CLIENTS_FILE, std::ios::out);
+	if (!ofsCl.is_open())
+	{
+		std::cout << "Error while openning the file!";
+		return;
+	}
+
+	for (size_t i = 0; i < arrClients.getSize(); i++)
+	{
+		arrClients[i].writeClientInFile(ofsCl);
+	}
+
+	ofsCl.close();
+}
+
+void System::writeDriversInFile() const
+{
+	std::ofstream ofsDr(DRIVERS_FILE, std::ios::out);
+	if (!ofsDr.is_open())
+	{
+		std::cout << "Error while openning the file!";
+		return;
+	}
+	for (size_t i = 0; i < arrDrivers.getSize(); i++)
+	{
+		arrDrivers[i].writeDriverInFile(ofsDr);
+	}
+
+	ofsDr.close();
+}
+
+void System::writeOrdersInFile() const
+{
+	std::ofstream ofsOr(ORDERS_FILE, std::ios::out);
+	if (!ofsOr.is_open())
+	{
+		std::cout << "Error while openning the file!" << std::endl;
+		return;
+	}
+
 	for (size_t i = 0; i < arrOrders.getSize(); i++)
 	{
-		if (arrOrders[i].getClient()->getUserName() == currentUser->getUserName())
-			return arrOrders[i].getID();
+		if (arrOrders[i].getStatus() == StatusOrder::paid)
+			continue;
+		arrOrders[i].writeOrderInFile(ofsOr);
 	}
-	throw std::invalid_argument("Not such an ID for order!");
+
+	ofsOr.close();
 }
+
+void System::SaveState() const
+{
+	writeClientsInFile();
+	writeDriversInFile();
+	writeOrdersInFile();
+}
+
 
 System::~System()
 {
 	SaveState();
 }
-
-//for (size_t i = 0; i < arrOrders.getSize(); i++)
-//{
-//	int idx = 0;
-//	try
-//	{
-//		idx = findClosestDriver(arrOrders[i].getOrigin());
-//	}
-//	catch (std::out_of_range& exc)
-//	{
-//		std::cout << exc.what() << std::endl;
-//		continue;
-//	}
-//	arrOrders[i].setDriver(&arrDrivers[idx]);
-//}
