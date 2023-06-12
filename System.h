@@ -38,7 +38,6 @@ public:
 	void add_money(double amount);//READY!!!!!
 	void checkCurrentClientOrders() const;
 
-	//Functions that I don't know how to make 
 	void change_address(const Address& address);//READYYYY!!!
 	void check_messages() const;//?????
 	void decline_order(size_t orderID);//??????
