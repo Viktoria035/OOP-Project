@@ -3,6 +3,41 @@
 #include <fstream>
 #pragma warning (disable:4996)
 
+void toLower(MyString& buff)
+{
+	static int diff = 'a' - 'A';
+	for (size_t i = 0; i < buff.length(); i++)
+	{
+		if (isCapitalLetter(buff[i]))
+			buff[i] += diff;
+	}
+}
+
+int getNumSize(size_t num)
+{
+	int count = 0;
+	while (num != 0)
+	{
+		num /= 10;
+		count++;
+	}
+	return count;
+}
+
+MyString convertToStr(size_t num)
+{
+	int numSize = getNumSize(num);
+	MyString str(numSize + 1);
+	int temp = numSize;
+	while (temp != 0)
+	{
+		str[temp - 1] = (num % 10) + '0';
+		num /= 10;
+		temp--;
+	}
+	str[numSize] = '\0';
+	return str;
+}
 
 bool isNumberF(char ch)
 {
@@ -53,7 +88,7 @@ double convertToLeva(size_t amount)
 	return amount / 100.0;
 }
 
-size_t convertToCoins(double amount)
+int convertToCoins(double amount)
 {
 	return amount * 100;
 }
@@ -154,4 +189,24 @@ int fromStringToInt(const MyString& number)
 		j++;
 	}
 	return num;
+}
+
+Client* findClient(Vector<Client>& users, const MyString& username)
+{
+	for (size_t i = 0; i < users.getSize(); i++)
+	{
+		if ((users[i]).getUserName() == username)
+			return &users[i];
+	}
+	throw std::invalid_argument("Not existing user with that username!");
+}
+
+Driver* findDriver(Vector<Driver>& users, const MyString& username)
+{
+	for (size_t i = 0; i < users.getSize(); i++)
+	{
+		if ((users[i]).getUserName() == username)
+			return &users[i];
+	}
+	throw std::invalid_argument("Not existing user with that username!");
 }
