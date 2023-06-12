@@ -3,9 +3,7 @@
 #include "Client.h"
 #include "Driver.h"
 #include "Order.h"
-//#include "Shared_ptr.hpp"
 #include "Vector.hpp"
-#include "Pointer.hpp"
 
 class System
 {
@@ -26,46 +24,40 @@ public:
 
 	void createNewClient(Client& newClient);
 	void createNewDriver(Driver& newDriver);
-	//void createNewOrder(Order& newOrder);<---------------------------------------------------------------------
-
-	void writeDriverInFile(std::ofstream& ofs,const Driver& newDriver) const;
-	void writeClientInFile(std::ofstream& ofs,const Client& newClient) const;
-	void writeOrderInFile(std::ofstream& ofs,const Order& newOrder) const;//<--------------------------------------------------------------
 
 	void load();
-
 	void loadClients();
 	void loadDrivers();
 	void loadOrders();
 
+	void order(const Address& origin, const Address& dest, size_t passengersCount);//READYYYY!!!!
 	void pay(double amount, size_t orderID);//READY!!!
 	void cancel_order(size_t orderID);//READYYYYYY!!!!!
 	void checkOrder(size_t orderID) const;//READYYYY!!!!!!
 	void rate(const MyString& nameOfDriver, double rating);//READYYYY!!!!!!
 	void add_money(double amount);//READY!!!!!
+	void checkCurrentClientOrders() const;
 
 	//Functions that I don't know how to make 
-	void order(const Address& origin, const Address& dest, size_t passengersCount);//READYYYY!!!!
 	void change_address(const Address& address);//READYYYY!!!
 	void check_messages() const;//?????
 	void decline_order(size_t orderID);//??????
-	//void acceptOrDecline();
-
 	void accept_order(size_t orderID, size_t minutes);//READYYY!!!!!
 	void finish_order(size_t orderID);//READYYYY!!!!!!
-	void accept_payment(size_t orderID,double amount);//READYYYY!!!!!!!
+	void accept_payment(size_t orderID);//READYYYY!!!!!!!
 
-	void print() const;
+	void printNotifications() const;
 
-	Client* findClient(const MyString& username);
-	Driver* findDriver(const MyString& username);
 	size_t findOrderByID(size_t ID) const;
-	size_t findOrderByClientUsername() const;
 
 	void sortDriversByAddress(const Address& adr,size_t size);
 	size_t findClosestDriver(const Address& adr);
 
-	void SaveState();
+	void writeClientsInFile() const;
+	void writeDriversInFile() const;
+	void writeOrdersInFile() const;
+	void SaveState() const;
+
 	~System();
 };
 
