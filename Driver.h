@@ -12,7 +12,6 @@ class Driver :public User
 {
 	MyString carNumber = "XX0000YY";//where X -> province code; N -> the serial code Y -> series
 	MyString phoneNumber = "0000000000";
-	size_t currAmount = 0;
 	Address address;
 	double rating = 1;
 	StatusDriver status = StatusDriver::Free;
@@ -29,7 +28,6 @@ public:
 	void setAddress(const MyString& origin,const MyString& note, int x, int y);
 	void setAddress(const Address& address);
 
-	//void setAmount(double amount);
 	void setRating(double rate);
 
 	void setStatus(int status);
@@ -40,9 +38,10 @@ public:
 	const Address& getAddress() const;
 	const StatusDriver& getStatus() const;
 	double getRating() const;
-	//size_t getAmount() const;
+
+	void writeDriverInFile(std::ofstream& ofs) const;
+	Driver readDriverFromFile(std::ifstream& ifs);
 
 	void giveRating(double rate);
 	User* clone() const override;
-	//void addMoney(double leva);
 };
