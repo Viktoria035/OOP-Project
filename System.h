@@ -34,17 +34,19 @@ public:
 	void pay(double amount, size_t orderID);//READY!!!
 	void cancel_order(size_t orderID);//READYYYYYY!!!!!
 	void checkOrder(size_t orderID) const;//READYYYY!!!!!!
-	void rate(const MyString& nameOfDriver, double rating);//READYYYY!!!!!!
+	void rate(size_t orderID, short rating);//READYYYY!!!!!!
 	void add_money(double amount);//READY!!!!!
 	void checkCurrentClientOrders() const;
 
+	//Functions that I don't know how to make 
 	void change_address(const Address& address);//READYYYY!!!
-	void check_messages() const;//?????
+	void check_messages();//?????
 	void decline_order(size_t orderID);//??????
 	void accept_order(size_t orderID, size_t minutes);//READYYY!!!!!
 	void finish_order(size_t orderID);//READYYYY!!!!!!
 	void accept_payment(size_t orderID);//READYYYY!!!!!!!
 
+	void handOutOrders();
 	void printNotifications() const;
 
 	size_t findOrderByID(size_t ID) const;
