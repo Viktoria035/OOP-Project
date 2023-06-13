@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include <fstream>
 #include <sstream>
+#pragma warning (disable:4996)
 
 int Order::count = 0;
 
@@ -63,25 +64,29 @@ void Order::setMinutes(int minutes)
 
 void Order::setDriverRating(short rate)
 {
-	(*driver).setRating(rate);
+	(*driver).addRating(rate);
 }
 
 void Order::setStatusByInt(int num)
 {
 	if (num == 0)
-		this->status = StatusOrder::inProgress;
+		this->status = StatusOrder::awaitingDriver;
 	else if (num == 1)
-		this->status = StatusOrder::accepted;
+		this->status = StatusOrder::inProgress;
 	else if (num == 2)
-		this->status = StatusOrder::finished;
+		this->status = StatusOrder::accepted;
 	else if (num == 3)
-		this->status = StatusOrder::canceled;
+		this->status = StatusOrder::finished;
 	else if (num == 4)
+		this->status = StatusOrder::canceled;
+	else if (num == 5)
 		this->status = StatusOrder::declined;
-	else if (num == 5)//not sure because this will never happen probably
+	else if (num == 6)
 		this->status = StatusOrder::paid;
+	else if (num == 7)
+		this->status = StatusOrder::rated;
 	else
-		throw std::invalid_argument("Not valid number for order status!");
+		throw std::invalid_argument("Not valid number to get order status!");
 }
 
 void Order::setOrderStatus(const StatusOrder& status)
@@ -91,7 +96,9 @@ void Order::setOrderStatus(const StatusOrder& status)
 
 void Order::getStatusOfOrder() const
 {
-	if (this->status == StatusOrder::accepted)
+	if (this->status == StatusOrder::awaitingDriver)
+		std::cout << " awaiting driver." << std::endl;
+	else if (this->status == StatusOrder::accepted)
 		std::cout << " accepted." << std::endl;
 	else if (this->status == StatusOrder::canceled)
 		std::cout << " canceled." << std::endl;
@@ -103,6 +110,8 @@ void Order::getStatusOfOrder() const
 		std::cout << " declined." << std::endl;
 	else if (this->status == StatusOrder::paid)
 		std::cout << " paid." << std::endl;
+	else if (this->status == StatusOrder::rated)
+		std::cout << " rated." << std::endl;
 	else
 	{
 		std::cout << "Not valid status!" << std::endl;
@@ -134,10 +143,13 @@ void Order::checkAllInfo() const
 {
 	std::cout << "The status of the order is: ";
 	getStatusOfOrder();
-	std::cout << "The car which your are waiting is: " << (*driver).getCarNumber() << '.' << std::endl;
-	std::cout << "Driver first name is: " << (*driver).getFirstName() << ", last name: " << (*driver).getLastName() <<
-		", phone number: " << (*driver).getPhoneNumber() << ", rating: " << (*driver).getRating() << '.' << std::endl;
-	std::cout << "He will be on the address after: " << minutes << " minutes." << std::endl;
+	if (driver != nullptr)
+	{
+		std::cout << "The car which your are waiting is: " << (*driver).getCarNumber() << '.' << std::endl;
+		std::cout << "Driver first name is: " << (*driver).getFirstName() << ", last name: " << (*driver).getLastName() <<
+			", phone number: " << (*driver).getPhoneNumber() << ", rating: " << (*driver).getRating() << '.' << std::endl;
+		std::cout << "He will be on the address after: " << minutes << " minutes." << std::endl;
+	}
 }
 
 void Order::checkOrderInfo() const
@@ -145,9 +157,12 @@ void Order::checkOrderInfo() const
 	std::cout << "Client: " << client->getFirstName() << " " << client->getLastName() << " has made an order from: "
 		<< origin.getName() << ", coordinates: (" << origin.getCoordinates().x << "," << origin.getCoordinates().y << "), note(not neccessery): "
 		<< origin.getNote() << std::endl;
-	std::cout << "To driver: " << driver->getFirstName() << " " << driver->getLastName() << std::endl;
-	std::cout << "Destionation is: " << destination.getName() << ", coordinates: (" << destination.getCoordinates().x << "," << destination.getCoordinates().y << "), note(not neccessery): "
-		<< destination.getNote() << std::endl;
+	if (driver != nullptr)
+	{
+		std::cout << "To driver: " << driver->getFirstName() << " " << driver->getLastName() << std::endl;
+		std::cout << "Destionation is: " << destination.getName() << ", coordinates: (" << destination.getCoordinates().x << "," << destination.getCoordinates().y << "), note(not neccessery): "
+			<< destination.getNote() << std::endl;
+	}
 	std::cout << "The orderID is: " << getID() << ", with status: ";
 	getStatusOfOrder();
 }
@@ -179,7 +194,7 @@ void Order::setDestination(const Address& address)
 void Order::setPassengersCount(int count)
 {
 	if (count < 0 || count > 6)
-		throw std::invalid_argument("Sorry the amount of passengers should be between 1-6!");
+		throw std::invalid_argument("Sorry the number of passengers should be between 1-6!");
 	this->passengersCount = count;
 }
 
@@ -230,7 +245,6 @@ int Order::getPassengersCount() const
 
 void Order::clear()
 {
-	driver->setStatus(StatusDriver::Free);
 	status = StatusOrder::canceled;
 }
 
@@ -266,7 +280,14 @@ void Order::writeOrderInFile(std::ofstream& ofs) const
 	ofs << getDest().getNote() << ",";
 	ofs << getPassengersCount() << ",";
 	ofs << getClient()->getUserName() << ",";
-	ofs << getDriver()->getUserName() << ",";
+	if (getDriver() == nullptr)
+	{
+		ofs << "NULL" << ",";
+	}
+	else
+	{
+		ofs << getDriver()->getUserName() << ",";
+	}
 	ofs << getMinutes() << ",";
 	ofs << (int)getStatus() << ",";
 	ofs << getAmount() << std::endl;
@@ -289,9 +310,33 @@ Order Order::readOrderFromFile(std::ifstream& ifs,Vector<Client>& clients, Vecto
 	setDestination(buff[4], buff[7], fromStringToInt(buff[5]), fromStringToInt(buff[6]));
 	setPassengersCount(fromStringToInt(buff[8]));
 	setClient(findClient(clients,buff[9]));
-	setDriver(findDriver(drivers,buff[10]));
+	if (strcmp(buff[10], "NULL") == 0)
+	{
+		setDriver(nullptr);
+	}
+	else
+	{
+		setDriver(findDriver(drivers, buff[10]));
+	}
 	setMinutes(fromStringToInt(buff[11]));
 	setStatusByInt(fromStringToInt(buff[12]));
 	setAmount(fromStringToInt(buff[13]));
 	return (*this);
+}
+
+void Order::addDeclinedDriver(const Driver* driver) 
+{
+	declinedBy.push_back(driver);
+}
+
+bool Order::hasDriverDeclined(const Driver* driver) const 
+{
+	for (size_t i = 0; i < declinedBy.getSize(); i++) 
+	{
+		if (declinedBy[i] == driver) 
+		{
+			return true;
+		}
+	}
+	return false;
 }
