@@ -1,15 +1,18 @@
 #pragma once
 #include "Client.h"
 #include "Driver.h"
+#include "Vector.hpp"
 
 enum class StatusOrder
 {
+	awaitingDriver,
 	inProgress,
 	accepted,
 	finished,
 	canceled,
 	declined,
-	paid
+	paid,
+	rated,
 };
 
 class Order
@@ -28,8 +31,9 @@ class Order
 	Address origin;
 	Address destination;
 
-	StatusOrder status = StatusOrder::inProgress;
+	StatusOrder status = StatusOrder::awaitingDriver;
 
+	Vector<const Driver*> declinedBy;
 public:
 	Order();
 	Order(const MyString& origin, int addressX, int addressY,
@@ -93,4 +97,7 @@ public:
 	void clear();//MUST TRY!!!!
 	void checkOrderInfo() const;
 	void checkAllInfo() const;//READYYYY!!!!!!
+
+	void addDeclinedDriver(const Driver* driver);
+	bool hasDriverDeclined(const Driver* driver) const;
 };
