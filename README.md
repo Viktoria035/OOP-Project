@@ -20,7 +20,8 @@
 5.Car number;
 6.Phone number;
 ```
-### *Login - access the system with #### -> < Username >, then < password >;
+### *Login:
+##### -> Access the system with: < Username >, then < password >;
 ### *Logout;
 ## Client commands:
 ```
