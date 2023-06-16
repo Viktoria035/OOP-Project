@@ -4,7 +4,7 @@
 
 # Commands:
 ## Generic:
-# *Registration:
+### *Registration:
 ```
 -------Client-------
 1.Username;
@@ -20,6 +20,6 @@
 5.Car number;
 6.Phone number;
 ```
-# *Login - access the system with -> <Username>, then <password>;
-# *Logout;
-#-> Client commands:
+### *Login - access the system with -> < Username >, then < password >;
+### *Logout;
+## Client commands:
