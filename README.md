@@ -20,7 +20,7 @@
 5.Car number;
 6.Phone number;
 ```
-### *Login - access the system with -> < Username >, then < password >;
+### *Login - access the system with #### -> < Username >, then < password >;
 ### *Logout;
 ## Client commands:
 ```
@@ -39,10 +39,15 @@
  ## Driver commands:
  ```
  -> Change address;
+ ***
  -> Check messages - info for the order who are offered to or already accept from the driver;
+ ***
  -> Accept order;
+ ***
  -> Finish order;
+ ***
  -> Decline order - offer the order to the next driver;
+ ***
  -> Accept payment;
  ```
  
