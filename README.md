@@ -26,9 +26,9 @@ Once the status of the order is set to “rated”, this indicates that the orde
 6.Phone number;
 ```
 ### *Login:
-##### -> Access the system with: < Username >, then < password >;
+ -> Access the system with: < Username >, then < password >;
 ### *Logout;
-##### -> Leave the system;
+ -> Leave the system;
 ## Client commands:
 ```
  -> Create order - set origin and destination;
