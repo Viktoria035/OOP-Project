@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+/*Source: https://github.com/Angeld55/Object-oriented_programming_FMI/tree/master/Week%2009/MyString%20(with%20move) */
 
 class MyString
 {
