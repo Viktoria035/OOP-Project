@@ -29,7 +29,7 @@ Client Client::readClientFromFile(std::ifstream& ifs)
 {
 	static char* messages[] = { (char*)"username: ",(char*)"password: ",
 	(char*)"first name: ",(char*)"last name: ",(char*)"coins" };
-	char buff[sizeof(messages) / sizeof(char*)][1024];
+	char buff[sizeof(messages) / sizeof(char*)][BUFF_SIZE];
 	char buff2[BUFF_SIZE];
 	ifs.getline(buff2, BUFF_SIZE);
 	std::stringstream ss(buff2);
