@@ -10,7 +10,6 @@ enum class StatusOrder
 	accepted,
 	finished,
 	canceled,
-	declined,
 	paid,
 	rated,
 };
@@ -18,15 +17,15 @@ enum class StatusOrder
 class Order
 {
 	Client* client = nullptr;
-	int passengersCount = 1;
-
 	Driver* driver = nullptr;
-	int minutes = 0;
+
+	size_t passengersCount = 1;
+	size_t minutes = 0;
 
 	int orderID;
 	static int count;
 
-	int amount = 0;//???
+	int amount = 0;
 
 	Address origin;
 	Address destination;
@@ -49,13 +48,11 @@ public:
 	Order(const MyString& origin, int addressX, int addressY,const MyString& addressNote,
 		const MyString& dest, int destX, int destY,const MyString& destNote, int countPassengers);
 
-	//void setID(int ID);
-
 	void setClient(Client* somebody);
 	void setDriver(Driver* somebody);
-	void setAmount(int amount);//????
+	void setAmount(int amount);
 	void setDriverRating(short rate);
-	void setMinutes(int minutes);
+	void setMinutes(size_t minutes);
 
 	void setStatusByInt(int num);
 	void setOrderStatus(const StatusOrder& status);
@@ -66,19 +63,19 @@ public:
 	void setDestination(const MyString& name,const MyString& note, int x, int y);
 	void setDestination(const Address& address);
 
-	void setPassengersCount(int count);
+	void setPassengersCount(size_t count);
 
 	void setDriverStatus(const StatusDriver& curr);
 	void setDriverAddress(const Address& add);
 	void addDriverAmount(int amount);
 
-	int getPassengersCount() const;
-	int getMinutes() const;
+	size_t getPassengersCount() const;
+	size_t getMinutes() const;
 
-	void getStatusOfOrder() const;
+	void getStatusOfOrderStr() const;
 	const StatusOrder& getStatus() const;
 
-	int getAmount() const;//????
+	int getAmount() const;
 
 	const Client* getClient() const;
 	Client* getClient();
@@ -93,10 +90,10 @@ public:
 	void writeOrderInFile(std::ofstream& ofs) const;
 	Order readOrderFromFile(std::ifstream& ifs, Vector<Client>& clients, Vector<Driver>& drivers);
 
-	void withdrawMoneyFromClient(size_t amount);//MUST TRY!!!!!!
-	void clear();//MUST TRY!!!!
-	void checkOrderInfo() const;
-	void checkAllInfo() const;//READYYYY!!!!!!
+	void withdrawMoneyFromClient(int amount);
+	void clear();
+	void checkOrderForDriver() const;
+	void checkOrderForClient() const;
 
 	void addDeclinedDriver(const Driver* driver);
 	bool hasDriverDeclined(const Driver* driver) const;
