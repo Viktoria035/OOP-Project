@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include <fstream>
 #include <sstream>
+
 Client::Client() :User("client") {}
 
 Client::Client(const MyString& username, const MyString& password,
@@ -29,12 +30,12 @@ Client Client::readClientFromFile(std::ifstream& ifs)
 	static char* messages[] = { (char*)"username: ",(char*)"password: ",
 	(char*)"first name: ",(char*)"last name: ",(char*)"coins" };
 	char buff[sizeof(messages) / sizeof(char*)][1024];
-	char buff2[1024];
-	ifs.getline(buff2, 1024);
+	char buff2[BUFF_SIZE];
+	ifs.getline(buff2, BUFF_SIZE);
 	std::stringstream ss(buff2);
 	for (int i = 0; i < sizeof(messages) / sizeof(char*); i++)
 	{
-		ss.getline(buff[i], 1024, ',');
+		ss.getline(buff[i], BUFF_SIZE, ',');
 	}
 	setUserName(buff[0]);
 	setPass(buff[1]);
