@@ -1,29 +1,26 @@
 #pragma once
 #include <fstream>
-#include "MyString.h"
 #include <iostream>
-#include "Address.h"
+#include "MyString.h"
 #include "Vector.hpp"
+
 class User
 {
+	int coins = 0;
+
 	MyString _type = "Unknown";
 	MyString _userName = "Unknown";
 	MyString _password = "Unknown";
 	MyString _firstName = "Unknown";
 	MyString _lastName = "Unknown";
 
-	int coins = 0;
-
 	Vector<MyString> notifications;
 public:
 	User() = default;
 	User(const MyString& type);
-	User(const MyString& type,const MyString& username, const MyString& password, 
-		const MyString& firstName, const MyString& lastName);
 	User(const MyString& username, const MyString& password,
 		const MyString& firstName, const MyString& lastName);
 
-	void setType(const MyString& type);
 	void setUserName(const MyString& name);
 	void setPass(const MyString& pass);
 	void setFirstName(const MyString& first);
