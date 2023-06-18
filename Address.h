@@ -34,7 +34,4 @@ public:
 	void setPoint(int x, int y);
 
 	double getDist(const Point& point) const;
-
-	//friend std::istream& operator>>(std::istream& is, Address& a);
-	//friend std::ostream& operator<<(std::ostream& os, const Address& a);
 };
