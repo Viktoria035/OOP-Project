@@ -18,7 +18,7 @@ class Driver :public User
 public:
 	Driver();
 
-	Driver(const MyString& type, const MyString& username, const MyString& password,
+	Driver(const MyString& username, const MyString& password,
 		const MyString& firstname,const MyString& lastname,
 		const MyString& carNumber, const MyString& phoneNumber,const Address& address);
 
@@ -29,6 +29,7 @@ public:
 	void setAddress(const Address& address);
 
 	void setRating(double rate);
+	void addRating(short rate);
 
 	void setStatus(int status);
 	void setStatus(const StatusDriver& status);
@@ -42,6 +43,5 @@ public:
 	void writeDriverInFile(std::ofstream& ofs) const;
 	Driver readDriverFromFile(std::ifstream& ifs);
 
-	void giveRating(double rate);
 	User* clone() const override;
 };
