@@ -147,6 +147,7 @@ void Interface::Order(System& taxi)
 	try
 	{
 		taxi.order(origin, dest, num);
+		std::cout << "Your order has been successfully created!" << std::endl;
 	}
 	catch (const std::exception& exc)
 	{
@@ -154,7 +155,6 @@ void Interface::Order(System& taxi)
 		std::cout << "Your command can not be finished, try again!" << std::endl;
 		return;
 	}
-	std::cout << "Your order has been successfully created!" << std::endl;
 }
 
 void Interface::CheckOrder(System& taxi) const
@@ -183,6 +183,7 @@ void Interface::CancelOrder(System& taxi)
 	try
 	{
 		taxi.cancel_order(orderID);
+		std::cout << "The order has been successfully canceled!" << std::endl;
 	}
 	catch (const std::exception& exc)
 	{
@@ -190,7 +191,6 @@ void Interface::CancelOrder(System& taxi)
 		std::cout << "Have a problem! Try again!" << std::endl;
 		return;
 	}
-	std::cout << "The order has been successfully canceled!" << std::endl;
 }
 
 void Interface::Payment(System& taxi)
@@ -210,6 +210,7 @@ void Interface::Payment(System& taxi)
 	try
 	{
 		taxi.pay(amount, orderID);
+		std::cout << "Your payment is successfull!" << std::endl;
 	}
 	catch (const std::exception& exc)
 	{
@@ -217,7 +218,6 @@ void Interface::Payment(System& taxi)
 		std::cout << "Try again!" << std::endl;
 		return;
 	}
-	std::cout << "Your payment is successfull!" << std::endl;
 }
 
 void Interface::Rating(System& taxi)
@@ -232,6 +232,7 @@ void Interface::Rating(System& taxi)
 	try
 	{
 		taxi.rate(orderID, rate);
+		std::cout << "Thank you for your rating!" << std::endl;
 	}
 	catch (const std::exception& exc)
 	{
@@ -239,7 +240,6 @@ void Interface::Rating(System& taxi)
 		std::cout << "Try again!" << std::endl;
 		return;
 	}
-	std::cout << "Thank you for your rating!" << std::endl;
 }
 
 void Interface::AddingMoney(System& taxi)
@@ -250,6 +250,7 @@ void Interface::AddingMoney(System& taxi)
 	try
 	{
 		taxi.add_money(amount);
+		std::cout << "Congrats, your transaction was successfull!" << std::endl;
 	}
 	catch (const std::exception& exc)
 	{
@@ -257,7 +258,6 @@ void Interface::AddingMoney(System& taxi)
 		std::cout << "Try again!" << std::endl;
 		return;
 	}
-	std::cout << "Congrats, your transaction was successfull!" << std::endl;
 }
 
 void Interface::CheckOrdersID(System& taxi) const
@@ -316,6 +316,7 @@ void Interface::ChangeAddress(System& taxi)
 	try
 	{
 		taxi.change_address(newAdd);
+		std::cout << "You have successfully changed your address!" << std::endl;
 	}
 	catch (const std::exception& exc)
 	{
@@ -323,7 +324,6 @@ void Interface::ChangeAddress(System& taxi)
 		std::cout << "Try again!" << std::endl;
 		return;
 	}
-	std::cout << "You have successfully changed your address!" << std::endl;
 }
 
 void Interface::CheckMessages(System& taxi) const
@@ -367,6 +367,7 @@ void Interface::DeclineOrder(System& taxi)
 	try
 	{
 		taxi.decline_order(orderID);
+		std::cout << "The order has been successfully decline!" << std::endl;
 	}
 	catch (const std::exception& exc)
 	{
@@ -374,7 +375,6 @@ void Interface::DeclineOrder(System& taxi)
 		std::cout << "Try again!" << std::endl;
 		return;
 	}
-	std::cout << "The order has been successfully decline!" << std::endl;
 }
 
 void Interface::FinishOrder(System& taxi)
@@ -385,6 +385,7 @@ void Interface::FinishOrder(System& taxi)
 	try
 	{
 		taxi.finish_order(orderID);
+		std::cout << "You have successfully finished the order!" << std::endl;
 	}
 	catch (const std::exception& exc)
 	{
@@ -392,7 +393,6 @@ void Interface::FinishOrder(System& taxi)
 		std::wcout << "Try again!" << std::endl;
 		return;
 	}
-	std::cout << "You have successfully finished the order!" << std::endl;
 }
 
 void Interface::AcceptPayment(System& taxi)
@@ -403,6 +403,7 @@ void Interface::AcceptPayment(System& taxi)
 	try
 	{
 		taxi.accept_payment(orderID);
+		std::cout << "You have successfully accepted the payment!" << std::endl;
 	}
 	catch (const std::exception& exc)
 	{
@@ -410,7 +411,6 @@ void Interface::AcceptPayment(System& taxi)
 		std::cout << "Try again!" << std::endl;
 		return;
 	}
-	std::cout << "You have successfully accepted the payment!" << std::endl;
 }
 
 void Interface::ifDriverLogged(System& taxi)
