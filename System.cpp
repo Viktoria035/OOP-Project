@@ -240,7 +240,7 @@ void System::checkOrder(size_t orderID) const
 		throw std::invalid_argument("You are not client! You do not have the rights for this command!");
 }
 
-void System::checkCurrentClientOrders() const//look for ','
+void System::checkCurrentClientOrders() const
 {
 	if (currentUser->getType() == "client")
 	{
