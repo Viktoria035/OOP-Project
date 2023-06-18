@@ -222,7 +222,7 @@ void Interface::Payment(System& taxi)
 
 void Interface::Rating(System& taxi)
 {
-	short rate = 1;
+	short rate = 0;
 	std::cout << "Please select number from 1 to 5: ";
 	std::cin >> rate;
 	std::cout << std::endl;
@@ -359,7 +359,7 @@ void Interface::AcceptOrder(System& taxi)
 	}
 }
 
-void Interface::DeclineOrder(System& taxi)//loook not ready logic
+void Interface::DeclineOrder(System& taxi)
 {
 	size_t orderID = 0;
 	std::cout << "Please select which order ID will you decline: ";
