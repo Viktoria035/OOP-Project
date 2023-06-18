@@ -55,10 +55,8 @@ void Order::setAmount(int amount)
 	this->amount = amount;
 }
 
-void Order::setMinutes(int minutes)
+void Order::setMinutes(size_t minutes)
 {
-	if (minutes < 0)
-		minutes = 0;
 	this->minutes = minutes;
 }
 
@@ -80,10 +78,8 @@ void Order::setStatusByInt(int num)
 	else if (num == 4)
 		this->status = StatusOrder::canceled;
 	else if (num == 5)
-		this->status = StatusOrder::declined;
-	else if (num == 6)
 		this->status = StatusOrder::paid;
-	else if (num == 7)
+	else if (num == 6)
 		this->status = StatusOrder::rated;
 	else
 		throw std::invalid_argument("Not valid number to get order status!");
@@ -94,7 +90,7 @@ void Order::setOrderStatus(const StatusOrder& status)
 	this->status = status;
 }
 
-void Order::getStatusOfOrder() const
+void Order::getStatusOfOrderStr() const
 {
 	if (this->status == StatusOrder::awaitingDriver)
 		std::cout << " awaiting driver." << std::endl;
@@ -106,8 +102,6 @@ void Order::getStatusOfOrder() const
 		std::cout << " finished." << std::endl;
 	else if (this->status == StatusOrder::inProgress)
 		std::cout << " in progress." << std::endl;
-	else if (this->status == StatusOrder::declined)
-		std::cout << " declined." << std::endl;
 	else if (this->status == StatusOrder::paid)
 		std::cout << " paid." << std::endl;
 	else if (this->status == StatusOrder::rated)
@@ -139,10 +133,10 @@ size_t Order::getID() const
 	return orderID;
 }
 
-void Order::checkAllInfo() const
+void Order::checkOrderForClient() const
 {
 	std::cout << "The status of the order is: ";
-	getStatusOfOrder();
+	getStatusOfOrderStr();
 	if (driver != nullptr)
 	{
 		std::cout << "The car which your are waiting is: " << (*driver).getCarNumber() << '.' << std::endl;
@@ -152,7 +146,7 @@ void Order::checkAllInfo() const
 	}
 }
 
-void Order::checkOrderInfo() const
+void Order::checkOrderForDriver() const
 {
 	std::cout << "Client: " << client->getFirstName() << " " << client->getLastName() << " has made an order from: "
 		<< origin.getName() << ", coordinates: (" << origin.getCoordinates().x << "," << origin.getCoordinates().y << "), note(not neccessery): "
@@ -164,7 +158,7 @@ void Order::checkOrderInfo() const
 			<< destination.getNote() << std::endl;
 	}
 	std::cout << "The orderID is: " << getID() << ", with status: ";
-	getStatusOfOrder();
+	getStatusOfOrderStr();
 }
 
 void Order::setAddress(const MyString& name,const MyString& note, int x, int y)
@@ -191,9 +185,9 @@ void Order::setDestination(const Address& address)
 	destination = address;
 }
 
-void Order::setPassengersCount(int count)
+void Order::setPassengersCount(size_t count)
 {
-	if (count < 0 || count > 6)
+	if (count < 1 || count > 6)
 		throw std::invalid_argument("Sorry the number of passengers should be between 1-6!");
 	this->passengersCount = count;
 }
@@ -233,12 +227,12 @@ int Order::getAmount() const
 	return amount;
 }
 
-int Order::getMinutes() const
+size_t Order::getMinutes() const
 {
 	return minutes;
 }
 
-int Order::getPassengersCount() const
+size_t Order::getPassengersCount() const
 {
 	return passengersCount;
 }
@@ -248,9 +242,9 @@ void Order::clear()
 	status = StatusOrder::canceled;
 }
 
-void Order::withdrawMoneyFromClient(size_t amount)
+void Order::withdrawMoneyFromClient(int amount)
 {
-	(*client).withdraw(amount);
+	client->withdraw(amount);
 }
 
 void Order::setDriverStatus(const StatusDriver& curr)
@@ -300,11 +294,11 @@ Order Order::readOrderFromFile(std::ifstream& ifs,Vector<Client>& clients, Vecto
 	(char*)"minutes",(char*)"status" ,(char*)"amount" };
 	char buff[sizeof(messegesOrders) / sizeof(char*)][1024];
 	char buff2[BUFF_SIZE];
-	ifs.getline(buff2, 1024);
+	ifs.getline(buff2, BUFF_SIZE);
 	std::stringstream ss(buff2);
 	for (int i = 0; i < sizeof(messegesOrders) / sizeof(char*); i++)
 	{
-		ss.getline(buff[i], 1024, ',');
+		ss.getline(buff[i], BUFF_SIZE, ',');
 	}
 	setAddress(buff[0], buff[3], fromStringToInt(buff[1]), fromStringToInt(buff[2]));
 	setDestination(buff[4], buff[7], fromStringToInt(buff[5]), fromStringToInt(buff[6]));
