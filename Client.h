@@ -14,8 +14,5 @@ public:
 	void writeClientInFile(std::ofstream& ofs) const;
 	Client readClientFromFile(std::ifstream& ifs);
 
-	friend std::istream& operator>>(std::istream& is, Client& client);
-	friend std::ostream& operator<<(std::ostream& os, const Client& client);
-
 	User* clone() const override;
 };
