@@ -6,10 +6,10 @@
 
 Driver::Driver():User("driver") {}
 
-Driver::Driver(const MyString& type,const MyString& username, const MyString& password,
+Driver::Driver(const MyString& username, const MyString& password,
 	const MyString& firstname, const MyString& lastname,
 	const MyString& carNumber, const MyString& phoneNumber,const Address& address):
-	User(type,username, password,firstname,lastname)
+	User(username, password,firstname,lastname)
 {
 	setCarNumber(carNumber);
 	setPhoneNumber(phoneNumber);
@@ -26,7 +26,7 @@ void Driver::setCarNumber(const MyString& carNumber)
 void Driver::setPhoneNumber(const MyString& phoneNumber)
 {
 	if (!isValidPhoneNumber(phoneNumber))
-		throw std::invalid_argument("Phone number must be with digits from 0 to 9!");
+		throw std::invalid_argument("Not valid phone number!");
 	this->phoneNumber = phoneNumber;
 }
 
@@ -47,6 +47,14 @@ void Driver::setRating(double rate)
 	if (rate < 1 || rate > 5)
 		throw std::invalid_argument("Not valid rating!");
 	rating = rate;
+}
+
+void Driver::addRating(short rate)
+{
+	if(rate < 1 || rate > 5)
+		throw std::invalid_argument("Not valid rating!");
+	rating += rate;
+	rating /= 2.0;
 }
 
 const MyString& Driver::getCarNumber() const
@@ -87,14 +95,6 @@ const StatusDriver& Driver::getStatus() const
 double Driver::getRating() const
 {
 	return rating;
-}
-
-void Driver::giveRating(double rate)
-{
-	if (rate < 1 || rate > 5)
-		throw std::invalid_argument("Not valid rating!");
-	rating += rate;
-	rating /= 2;
 }
 
 void Driver::writeDriverInFile(std::ofstream& ofs) const
