@@ -350,13 +350,19 @@ void System::accept_order(size_t orderID, size_t minutes)
 		size_t idx = findOrderByID(orderID);
 		if (arrOrders[idx].getDriver()->getUserName() != currentUser->getUserName())
 			throw std::invalid_argument("Sorry, but you do not have the rights for this order!");
-		arrOrders[idx].setDriver(findDriver(arrDrivers,currentUser->getUserName()));
-		arrOrders[idx].setMinutes(minutes);
-		arrOrders[idx].setOrderStatus(StatusOrder::accepted);
-		arrOrders[idx].setDriverStatus(StatusDriver::Driving);
-		std::cout << "The order is accept!" << std::endl;
+		if (arrOrders[idx].getStatus() == StatusOrder::inProgress)
+		{
 
-		arrOrders[idx].getClient()->addNotification("Order with ID: " + convertToStr(orderID) + ", has just been accepted!");
+			arrOrders[idx].setDriver(findDriver(arrDrivers, currentUser->getUserName()));
+			arrOrders[idx].setMinutes(minutes);
+			arrOrders[idx].setOrderStatus(StatusOrder::accepted);
+			arrOrders[idx].setDriverStatus(StatusDriver::Driving);
+			std::cout << "The order is accept!" << std::endl;
+
+			arrOrders[idx].getClient()->addNotification("Order with ID: " + convertToStr(orderID) + ", has just been accepted!");
+		}
+		else
+			throw std::logic_error("Sorry, the command is not allowed to this order!");
 	}
 	else
 		throw std::invalid_argument("You are not driver! You do not have the rights for this command!");
@@ -369,11 +375,17 @@ void System::finish_order(size_t orderID)
 		size_t idx = findOrderByID(orderID);
 		if (arrOrders[idx].getDriver()->getUserName() != currentUser->getUserName())
 			throw std::invalid_argument("Sorry,but you do not have the rights for this order!");
-		(arrOrders[idx]).setDriverAddress(arrOrders[idx].getDest());
-		(arrOrders[idx]).setOrderStatus(StatusOrder::finished);
-		arrOrders[idx].setDriverStatus(StatusDriver::Free);
-		arrOrders[idx].getClient()->addNotification("Order with ID: " + convertToStr(orderID) +
-			", has been finished. Please pay the driver as soon as possible!");
+		if (arrOrders[idx].getStatus() == StatusOrder::accepted)
+		{
+			(arrOrders[idx]).setDriverAddress(arrOrders[idx].getDest());
+			(arrOrders[idx]).setOrderStatus(StatusOrder::finished);
+			arrOrders[idx].setDriverStatus(StatusDriver::Free);
+
+			arrOrders[idx].getClient()->addNotification("Order with ID: " + convertToStr(orderID) +
+				", has been finished. Please pay the driver as soon as possible!");
+		}
+		else
+			throw std::logic_error("Sorry, the command is not allowed to this order!");
 	}
 	else
 		throw std::invalid_argument("You are not driver! You do not have the rights for this command!");
@@ -501,9 +513,14 @@ void System::decline_order(size_t orderID)
 		size_t idx = findOrderByID(orderID);
 		if (arrOrders[idx].getDriver()->getUserName() != currentUser->getUserName())
 			throw std::invalid_argument("Sorry,but you do not have the rights for this order!");
-		arrOrders[idx].setOrderStatus(StatusOrder::awaitingDriver);
-		arrOrders[idx].addDeclinedDriver(static_cast<Driver*>(currentUser));
-		arrOrders[idx].setDriver(nullptr);
+		if (arrOrders[idx].getStatus() == StatusOrder::inProgress)
+		{
+			arrOrders[idx].setOrderStatus(StatusOrder::awaitingDriver);
+			arrOrders[idx].addDeclinedDriver(static_cast<Driver*>(currentUser));
+			arrOrders[idx].setDriver(nullptr);
+		}
+		else
+			throw std::logic_error("Sorry, the command is not allowed to this order!");
 	}
 	else
 		throw std::invalid_argument("You are not driver! You do not have the rights for this command!");
