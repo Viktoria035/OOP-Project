@@ -1,0 +1,56 @@
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Explicitly declare text files to be normalized and converted to native line endings
+*.c text
+*.cpp text
+*.h text
+*.hpp text
+*.cs text
+*.java text
+*.py text
+*.js text
+*.html text
+*.css text
+*.json text
+*.xml text
+*.md text
+*.txt text
+
+# Denote all binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.exe binary
+*.dll binary
+*.so binary
+*.o binary
+*.obj binary
+*.pdb binary
+
+# Visual Studio specific files
+*.vcxproj text
+*.sln text
+*.filters text
+
+# Ignore debug and build files
+*.log text
+*.user text
+*.suo text
+*.ipch binary
+*.pch binary
+*.obj binary
+*.exe binary
+*.dll binary
+*.lib binary
+*.idb binary
+*.pdb binary
+*.class binary
+*.psd binary
+*.db binary
